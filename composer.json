@@ -1,0 +1,24 @@
+{
+  "name": "rudymas/emvc_menu",
+  "description": "PHP class Emvc_Menu for the EasyMVC Framework",
+  "version": "1.4.0",
+  "type": "library",
+  "license": "GPL-3.0",
+  "authors": [
+    {
+      "name": "Rudy Mas",
+      "email": "rudy.mas@rmsoft.be",
+      "homepage": "http://www.rmsoft.be",
+      "role": "Developer"
+    }
+  ],
+  "minimum-stability": "stable",
+  "require": {
+    "php": ">= 7.1"
+  },
+  "autoload": {
+    "psr-4": {
+      "RudyMas\\Emvc_Menu\\": "src/"
+    }
+  }
+}
