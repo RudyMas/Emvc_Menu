@@ -1,6 +1,6 @@
 {
-  "name": "rudymas/emvc_menu",
-  "description": "PHP class Emvc_Menu for the EasyMVC Framework",
+  "name": "easymvc/menu",
+  "description": "PHP Class Menu for the EasyMVC Framework",
   "version": "1.4.0",
   "type": "library",
   "license": "GPL-3.0",
@@ -18,7 +18,7 @@
   },
   "autoload": {
     "psr-4": {
-      "RudyMas\\Emvc_Menu\\": "src/"
+      "EasyMVC\\Menu\\": "src/"
     }
   }
 }

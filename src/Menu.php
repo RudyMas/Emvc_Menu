@@ -1,6 +1,6 @@
 <?php
 
-namespace RudyMas\Emvc_Menu;
+namespace EasyMVC\Menu;
 
 /**
  * Class Menu
@@ -9,9 +9,9 @@ namespace RudyMas\Emvc_Menu;
  * @copyright   2017-2018, rmsoft.be. (http://www.rmsoft.be/)
  * @license     https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
  * @version     1.4.0
- * @package     RudyMas\Emvc_Menu
+ * @package     EasyMVC\Menu
  */
-class Emvc_Menu
+class Menu
 {
     private $menuData = [];
 
@@ -289,4 +289,4 @@ class Emvc_Menu
     }
 }
 
-/** End of File: Emvc_Menu.php **/
+/** End of File: Menu.php **/
