@@ -3,12 +3,12 @@
 namespace EasyMVC\Menu;
 
 /**
- * Class Menu
+ * Class Menu (PHP version 7.1)
  *
  * @author      Rudy Mas <rudy.mas@rmsoft.be>
  * @copyright   2017-2018, rmsoft.be. (http://www.rmsoft.be/)
  * @license     https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
- * @version     1.4.0
+ * @version     1.5.0
  * @package     EasyMVC\Menu
  */
 class Menu
@@ -21,7 +21,7 @@ class Menu
      * @param string $menuUrl
      * @param string $menuClass
      */
-    public function addMenu(array $menuArray, string $menuText, string $menuUrl, string $menuClass = '')
+    public function addMenu(array $menuArray, string $menuText, string $menuUrl, string $menuClass = ''): void
     {
         $menuOptions = $this->getIndexes($menuArray);
         $this->menuData[$menuOptions[0]][$menuOptions[1]][$menuOptions[2]][$menuOptions[3]][$menuOptions[4]][$menuOptions[5]][$menuOptions[6]][$menuOptions[7]][$menuOptions[8]][$menuOptions[9]]['url'] = $menuUrl;
@@ -253,6 +253,8 @@ class Menu
 
         return [$output, $class];
     }
+
+    // TODO: Rewrite the creation of the Login Menu. It has to be the same as for a normal menu
 
     /**
      * @param bool $isOnline
