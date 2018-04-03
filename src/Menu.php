@@ -8,7 +8,7 @@ namespace EasyMVC\Menu;
  * @author      Rudy Mas <rudy.mas@rmsoft.be>
  * @copyright   2017-2018, rmsoft.be. (http://www.rmsoft.be/)
  * @license     https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
- * @version     1.5.0
+ * @version     1.6.0
  * @package     EasyMVC\Menu
  */
 class Menu
@@ -90,27 +90,18 @@ class Menu
         if ($numberOfPages == 1) {
             return '';
         } else {
-            if ($pageNumber == 1) {
-                $output .= '<li class="active"><span>1</span></li>';
-            } else {
-                $output .= '<li><a href="' . BASE_URL . $pageUrl . '/1">1</a></li>';
-            }
+            $class = ($pageNumber == 1) ? 'page-item active' : 'page-item';
+            $output .= '<li class="' . $class . '"><a class="page-link" href="' . BASE_URL . $pageUrl . '/1">1</a></li>';
 
             if ($numberOfPages > 2) {
                 if ($numberOfPages > 15) {
-                    if ($pageNumber < 11) {
-                        $output .= '<li class="disabled"><span>&laquo;</span></li>';
-                    } else {
-                        $output .= '<li><a href="' . BASE_URL . $pageUrl . '/' . ($pageNumber - 10) . '">&laquo;</a></li>';
-                    }
+                    $class = ($pageNumber < 11) ? 'page-item disabled' : 'page-item';
+                    $output .= '<li class="' . $class . '"><a class="page-link" href="' . BASE_URL . $pageUrl . '/' . ($pageNumber - 10) . '">&laquo;</a></li>';
                 }
 
                 if ($numberOfPages > 5) {
-                    if ($pageNumber == 1) {
-                        $output .= '<li class="disabled"><span>&lsaquo;</span></li>';
-                    } else {
-                        $output .= '<li><a href="' . BASE_URL . $pageUrl . '/' . ($pageNumber - 1) . '">&lsaquo;</a></li>';
-                    }
+                    $class = ($pageNumber == 1) ? 'page-item disabled' : 'page-item';
+                    $output .= '<li class="' . $class . '"><a class="page-link" href="' . BASE_URL . $pageUrl . '/' . ($pageNumber - 1) . '">&lsaquo;</a></li>';
                 }
 
                 if ($numberOfPages < 8) {
@@ -127,35 +118,23 @@ class Menu
                     $xStop = $pageNumber + 3;
                 }
                 for ($x = $xStart; $x < $xStop; $x++) {
-                    if ($pageNumber == $x) {
-                        $output .= '<li class="active"><span>' . $x . '</span></li>';
-                    } else {
-                        $output .= '<li><a href="' . BASE_URL . $pageUrl . '/' . $x . '">' . $x . '</a></li>';
-                    }
+                    $class = ($pageNumber == $x) ? 'page-item active' : 'page-item';
+                    $output .= '<li class="' . $class . '"><a class="page-link" href="' . BASE_URL . $pageUrl . '/' . $x . '">' . $x . '</a></li>';
                 }
 
                 if ($numberOfPages > 5) {
-                    if ($pageNumber == $numberOfPages) {
-                        $output .= '<li class="disabled"><span>&rsaquo;</span></li>';
-                    } else {
-                        $output .= '<li><a href="' . BASE_URL . $pageUrl . '/' . ($pageNumber + 1) . '">&rsaquo;</a></li>';
-                    }
+                    $class = ($pageNumber == $numberOfPages) ? 'page-item disabled' : 'page-item';
+                    $output .= '<li class="' . $class . '"><a class="page-link" href="' . BASE_URL . $pageUrl . '/' . ($pageNumber + 1) . '">&rsaquo;</a></li>';
                 }
 
                 if ($numberOfPages > 15) {
-                    if ($pageNumber > $numberOfPages - 10) {
-                        $output .= '<li class="disabled"><span>&raquo;</span></li>';
-                    } else {
-                        $output .= '<li><a href="' . BASE_URL . $pageUrl . '/' . ($pageNumber + 10) . '">&raquo;</a></li>';
-                    }
+                    $class = ($pageNumber > $numberOfPages - 10) ? 'page-item disabled' : 'page-item';
+                    $output .= '<li class="' . $class . '"><a class="page-link" href="' . BASE_URL . $pageUrl . '/' . ($pageNumber + 10) . '">&raquo;</a></li>';
                 }
             }
 
-            if ($pageNumber == $numberOfPages) {
-                $output .= '<li class="active"><span>' . $numberOfPages . '</span></li>';
-            } else {
-                $output .= '<li><a href="' . BASE_URL . $pageUrl . '/' . $numberOfPages . '">' . $numberOfPages . '</a></li>';
-            }
+            $class = ($pageNumber == $numberOfPages) ? 'page-item active' : 'page-item';
+            $output .= '<li class="' . $class . '"><a class="page-link" href="' . BASE_URL . $pageUrl . '/' . $numberOfPages . '">' . $numberOfPages . '</a></li>';
         }
 
         $output .= '</ul>';

@@ -1,7 +1,6 @@
 {
   "name": "easymvc/menu",
   "description": "PHP Class Menu for the EasyMVC Framework",
-  "version": "1.5.0",
   "type": "library",
   "license": "GPL-3.0",
   "authors": [
