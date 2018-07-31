@@ -8,7 +8,7 @@ namespace EasyMVC\Menu;
  * @author      Rudy Mas <rudy.mas@rmsoft.be>
  * @copyright   2017-2018, rmsoft.be. (http://www.rmsoft.be/)
  * @license     https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
- * @version     1.6.0.11
+ * @version     2.0.0.12
  * @package     EasyMVC\Menu
  */
 class Menu
@@ -16,6 +16,7 @@ class Menu
     private $menuData = [];
 
     /**
+     * @deprecated
      * @param array $menuArray
      * @param string $menuText
      * @param string $menuUrl
@@ -23,6 +24,7 @@ class Menu
      */
     public function addMenu(array $menuArray, string $menuText, string $menuUrl, string $menuClass = ''): void
     {
+        trigger_error('Use addMenuItem instead.', E_USER_DEPRECATED);
         $menuOptions = $this->getIndexes($menuArray);
         $this->menuData[$menuOptions[0]][$menuOptions[1]][$menuOptions[2]][$menuOptions[3]][$menuOptions[4]][$menuOptions[5]][$menuOptions[6]][$menuOptions[7]][$menuOptions[8]][$menuOptions[9]]['url'] = $menuUrl;
         $this->menuData[$menuOptions[0]][$menuOptions[1]][$menuOptions[2]][$menuOptions[3]][$menuOptions[4]][$menuOptions[5]][$menuOptions[6]][$menuOptions[7]][$menuOptions[8]][$menuOptions[9]]['text'] = $menuText;
@@ -30,6 +32,25 @@ class Menu
     }
 
     /**
+     * @param array $menuArray
+     * @param string $menuText
+     * @param string $menuUrl
+     * @param string $menuPlacement
+     * @param string $menuId
+     * @param string $menuClass
+     */
+    public function add(array $menuArray, string $menuText, string $menuUrl, string $menuPlacement = 'left', string $menuId = '', string $menuClass = ''): void
+    {
+        $menuOptions = $this->getIndexes($menuArray);
+        $this->menuData[$menuOptions[0]][$menuOptions[1]][$menuOptions[2]][$menuOptions[3]][$menuOptions[4]][$menuOptions[5]][$menuOptions[6]][$menuOptions[7]][$menuOptions[8]][$menuOptions[9]]['url'] = $menuUrl;
+        $this->menuData[$menuOptions[0]][$menuOptions[1]][$menuOptions[2]][$menuOptions[3]][$menuOptions[4]][$menuOptions[5]][$menuOptions[6]][$menuOptions[7]][$menuOptions[8]][$menuOptions[9]]['text'] = $menuText;
+        $this->menuData[$menuOptions[0]][$menuOptions[1]][$menuOptions[2]][$menuOptions[3]][$menuOptions[4]][$menuOptions[5]][$menuOptions[6]][$menuOptions[7]][$menuOptions[8]][$menuOptions[9]]['place'] = $menuPlacement;
+        $this->menuData[$menuOptions[0]][$menuOptions[1]][$menuOptions[2]][$menuOptions[3]][$menuOptions[4]][$menuOptions[5]][$menuOptions[6]][$menuOptions[7]][$menuOptions[8]][$menuOptions[9]]['id'] = $menuId;
+        $this->menuData[$menuOptions[0]][$menuOptions[1]][$menuOptions[2]][$menuOptions[3]][$menuOptions[4]][$menuOptions[5]][$menuOptions[6]][$menuOptions[7]][$menuOptions[8]][$menuOptions[9]]['class'] = $menuClass;
+    }
+
+    /**
+     * @deprecated
      * @param array $arrayMenu
      * @param array $args
      * @param string $id
@@ -38,11 +59,38 @@ class Menu
      */
     public function createMenu(array $arrayMenu = [], array $args = [], string $id = '', string $class = ''): string
     {
+        trigger_error('Use create instead.', E_USER_DEPRECATED);
+        $menu = new EmvcMenu($this->menuData);
         $output = '<div id=' . $id . '>';
         $output .= '<div id="mainMenu">';
-        $output .= $this->createMainMenu($arrayMenu, $args, '', $class);
+        $output .= $menu->createMenu($arrayMenu, $args, '', $class);
         $output .= '</div>';
         $output .= '</div>';
+        return $output;
+    }
+
+    /**
+     * @param string $menuType
+     * @param array $arrayMenu
+     * @param array $args
+     * @param string $id
+     * @param string $class
+     * @return string
+     */
+    public function create(string $menuType = 'emvc', array $arrayMenu = [], array $args = [], string $id = '', string $class = ''): string
+    {
+        switch ($menuType) {
+            case 'emvc':
+                $menu = new EmvcMenu($this->menuData);
+                break;
+            case 'bootstrap':
+                $menu = new BootstrapMenu($this->menuData);
+                break;
+            default:
+                new \Exception("Unknown menu type: {$menuType}");
+        }
+        /** @var object $menu */
+        $output = $menu->createMenu($arrayMenu, $args, $id, $class);
         return $output;
     }
 
@@ -56,12 +104,13 @@ class Menu
      */
     public function createMenuWithLogin(array $arrayMenu = [], array $args = [], string $id = '', string $class = '', bool $isOnline = false): string
     {
+        $menu = new EmvcMenu($this->menuData);
         $output = '<div id=' . $id . '>';
         $output .= '<div id="loginMenu">';
         $output .= $this->createLoginMenu($isOnline);
         $output .= '</div>';
         $output .= '<div id="mainMenu">';
-        $output .= $this->createMainMenu($arrayMenu, $args, '', $class);
+        $output .= $menu->createMenu($arrayMenu, $args, '', $class);
         $output .= '</div>';
         $output .= '</div>';
         return $output;
@@ -142,97 +191,6 @@ class Menu
         return $output;
     }
 
-    /**
-     * @param array $arrayMenu
-     * @param array $args
-     * @param string $id
-     * @param string $class
-     * @return string
-     */
-    private function createMainMenu(array $arrayMenu = [], array $args = [], string $id = '', string $class = ''): string
-    {
-        $numberArgs = count($args);
-        if (empty($arrayMenu)) $arrayMenu = $this->menuData;
-
-        $output = '';
-        $remove = ['none', 'None', 'NONE'];
-
-        $arrayKey = array_keys($arrayMenu);
-        $arrayKey = array_diff($arrayKey, $remove);
-        $arrayKey = array_values($arrayKey);
-        $arrayCount = count($arrayKey);
-
-        $output .= '<ul';
-        if ($id <> '') $output .= ' id="' . $id . '"';
-        if ($class <> '') $output .= ' class="' . $class . '"';
-        $output .= '>';
-
-        if (isset($_SESSION['numberOfMenuItems']) && $_SESSION['numberOfMenuItems'] < $arrayCount) {
-            $numberExtraMenus = ceil($arrayCount / $_SESSION['numberOfMenuItems']);
-            for ($x = 0; $x < $numberExtraMenus; $x++) {
-                $output .= '<li>';
-                $output .= '<a class="extraMenu">&lt;' . ($x + 1) . '&gt;</a>';
-                $output .= '<ul class="extraMenu">';
-                for ($y = $x * $_SESSION['numberOfMenuItems']; $y < ($_SESSION['numberOfMenuItems'] * $x) + $_SESSION['numberOfMenuItems'] && $y < $arrayCount; $y++) {
-                    $menuItem = $arrayKey[$y];
-                    $this->createSubMenu($args, $output, $numberArgs, $menuItem, $arrayMenu, $remove);
-                }
-                $output .= '</ul>';
-                $output .= '</li>';
-            }
-        } else {
-            foreach ($arrayKey as $menuItem) {
-                $this->createSubMenu($args, $output, $numberArgs, $menuItem, $arrayMenu, $remove);
-            }
-        }
-
-        $output .= '</ul>';
-        return $output;
-    }
-
-    /**
-     * @param array $args
-     * @param string $output
-     * @param int $numberArgs
-     * @param string $menuItem
-     * @param array $arrayMenu
-     * @param array $remove
-     */
-    private function createSubMenu(array &$args, string &$output, int $numberArgs, string $menuItem, array $arrayMenu, array $remove)
-    {
-        $args[$numberArgs] = $menuItem;
-        $output .= '<li>';
-        list($linkOutput, $linkClass) = $this->createMenuLink($args);
-        $output .= $linkOutput;
-        if (is_array($arrayMenu[$menuItem])) {
-            $arrayKeyChild = array_keys($arrayMenu[$menuItem]);
-            $arrayKeyChild = array_diff($arrayKeyChild, $remove);
-            $arrayCountChild = count($arrayKeyChild);
-            if ($arrayCountChild > 0) {
-                $output .= $this->createMainMenu($arrayMenu[$menuItem], $args, '', $linkClass);
-            }
-        }
-        $output .= '</li>';
-    }
-
-    /**
-     * @param array $args
-     * @return array
-     */
-    private function createMenuLink(array $args): array
-    {
-        $arguments = $this->getIndexes($args);
-        $url = $this->menuData[$arguments[0]][$arguments[1]][$arguments[2]][$arguments[3]][$arguments[4]][$arguments[5]][$arguments[6]][$arguments[7]][$arguments[8]][$arguments[9]]['url'];
-        $text = $this->menuData[$arguments[0]][$arguments[1]][$arguments[2]][$arguments[3]][$arguments[4]][$arguments[5]][$arguments[6]][$arguments[7]][$arguments[8]][$arguments[9]]['text'];
-        $class = $this->menuData[$arguments[0]][$arguments[1]][$arguments[2]][$arguments[3]][$arguments[4]][$arguments[5]][$arguments[6]][$arguments[7]][$arguments[8]][$arguments[9]]['class'];
-
-        $output = '<a href="' . BASE_URL . $url . '"';
-        if ($class <> '') $output .= ' class="' . $class . '"';
-        $output .= '>' . $text . '</a>';
-
-        return [$output, $class];
-    }
-
     // TODO: Rewrite the creation of the Login Menu. It has to be the same as for a normal menu
 
     /**
@@ -260,7 +218,7 @@ class Menu
      * @param array $args
      * @return array
      */
-    private function getIndexes(array $args): array
+    public static function getIndexes(array $args): array
     {
         $arguments = ['none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none', 'none'];
         for ($x = 0; $x < count($args); $x++) {
@@ -269,5 +227,3 @@ class Menu
         return $arguments;
     }
 }
-
-/** End of File: Menu.php **/
