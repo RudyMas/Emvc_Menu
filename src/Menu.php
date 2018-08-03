@@ -8,12 +8,30 @@ namespace EasyMVC\Menu;
  * @author      Rudy Mas <rudy.mas@rmsoft.be>
  * @copyright   2017-2018, rmsoft.be. (http://www.rmsoft.be/)
  * @license     https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
- * @version     2.0.0.12
+ * @version     1.9.1.13
  * @package     EasyMVC\Menu
  */
 class Menu
 {
     private $menuData = [];
+    private $bootstrapOptions = [
+        'brand' => [
+            'image' => [
+                'link' => 'none',
+                'size' => 30
+            ],
+            'name' => 'Name Website',
+            'style' => [],
+        ],
+        'mobile' => false,
+        'mobileSize' => 'md',
+        'overview' => false,
+        'theme' => [
+            'fore' => 'light',
+            'back' => '',
+            'color' => ''
+        ]
+    ];
 
     /**
      * @deprecated
@@ -24,7 +42,7 @@ class Menu
      */
     public function addMenu(array $menuArray, string $menuText, string $menuUrl, string $menuClass = ''): void
     {
-        trigger_error('Use addMenuItem instead.', E_USER_DEPRECATED);
+        trigger_error('Use "add" instead.', E_USER_DEPRECATED);
         $menuOptions = $this->getIndexes($menuArray);
         $this->menuData[$menuOptions[0]][$menuOptions[1]][$menuOptions[2]][$menuOptions[3]][$menuOptions[4]][$menuOptions[5]][$menuOptions[6]][$menuOptions[7]][$menuOptions[8]][$menuOptions[9]]['url'] = $menuUrl;
         $this->menuData[$menuOptions[0]][$menuOptions[1]][$menuOptions[2]][$menuOptions[3]][$menuOptions[4]][$menuOptions[5]][$menuOptions[6]][$menuOptions[7]][$menuOptions[8]][$menuOptions[9]]['text'] = $menuText;
@@ -59,7 +77,7 @@ class Menu
      */
     public function createMenu(array $arrayMenu = [], array $args = [], string $id = '', string $class = ''): string
     {
-        trigger_error('Use create instead.', E_USER_DEPRECATED);
+        trigger_error('Use "create" instead.', E_USER_DEPRECATED);
         $menu = new EmvcMenu($this->menuData);
         $output = '<div id=' . $id . '>';
         $output .= '<div id="mainMenu">';
@@ -76,6 +94,7 @@ class Menu
      * @param string $id
      * @param string $class
      * @return string
+     * @throws \Exception
      */
     public function create(string $menuType = 'emvc', array $arrayMenu = [], array $args = [], string $id = '', string $class = ''): string
     {
@@ -84,13 +103,13 @@ class Menu
                 $menu = new EmvcMenu($this->menuData);
                 break;
             case 'bootstrap':
-                $menu = new BootstrapMenu($this->menuData);
+                $menu = new BootstrapMenu($this->menuData, $this->bootstrapOptions);
                 break;
             default:
-                new \Exception("Unknown menu type: {$menuType}");
+                throw new \Exception("Unknown menu type: {$menuType}");
         }
         /** @var object $menu */
-        $output = $menu->createMenu($arrayMenu, $args, $id, $class);
+        $output = $menu->createMenu($id, $class);
         return $output;
     }
 
@@ -225,5 +244,107 @@ class Menu
             if (isset($args[$x])) $arguments[$x] = $args[$x];
         }
         return $arguments;
+    }
+
+    /**
+     * Set Bootstrap brand image
+     *
+     * @param string $link
+     * @param int $size
+     */
+    public function setBootstrapBrandImage(string $link, int $size = 30): void
+    {
+        $this->bootstrapOptions['brand']['image']['link'] = $link;
+        $this->bootstrapOptions['brand']['image']['size'] = $size;
+    }
+
+    /**
+     * Set Bootstrap brand option
+     *
+     * @param string $name
+     */
+    public function setBootstrapBrandName(string $name): void
+    {
+        $this->bootstrapOptions['brand']['name'] = $name;
+    }
+
+    /**
+     * Set Bootstrap Brand Style
+     *
+     * @param array $style
+     */
+    public function setBootstrapBrandNameStyle(array $style): void
+    {
+        $this->bootstrapOptions['brand']['style'] = $style;
+    }
+
+    /**
+     * Set is mobile support option
+     *
+     * @param bool $active
+     */
+    public function setBootstrapMobile(bool $active): void
+    {
+        $this->bootstrapOptions['mobile'] = $active;
+    }
+
+    /**
+     * Set the size when the mobile support has to kick in
+     *
+     * @param string $size
+     */
+    public function setBootstrapMobileSize(string $size): void
+    {
+        $this->bootstrapOptions['mobileSize'] = $size;
+    }
+
+    /**
+     * Set Bootstrap overview option
+     *
+     * @param bool $overview
+     */
+    public function setBootstrapOverview(bool $overview): void
+    {
+        $this->bootstrapOptions['overview'] = $overview;
+    }
+
+    /**
+     * Set Bootstrap navbar to light or dark
+     *
+     * @param string $theme
+     */
+    public function setBootstrapNavbarTheme(string $theme): void
+    {
+        $this->bootstrapOptions['theme']['fore'] = $theme;
+    }
+
+    /**
+     * Set Bootstrap background color with bg- option
+     *
+     * @param string $background
+     */
+    public function setBootstrapBackgroundBg(string $background): void
+    {
+        $this->bootstrapOptions['theme']['back'] = $background;
+    }
+
+    /**
+     * Set Bootstrap background color by style color
+     *
+     * @param string $HexColor
+     */
+    public function setBootstrapBackgroundColor(string $HexColor): void
+    {
+        $this->bootstrapOptions['theme']['color'] = $HexColor;
+    }
+
+    /**
+     * Get all settings for Bootstrap plugin
+     *
+     * @return array
+     */
+    public function getBootstrapOptions(): array
+    {
+        return $this->bootstrapOptions;
     }
 }

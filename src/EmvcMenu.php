@@ -33,11 +33,11 @@ class EmvcMenu
      */
     public function createMenu(array $arrayMenu, array $args, string $id, string $class): string
     {
-        $output = '<div id=' . $id . '>';
+        $output = '<nav id=' . $id . '>';
         $output .= '<div id="mainMenu">';
         $output .= $this->createMainMenu($arrayMenu, $args, '', $class);
         $output .= '</div>';
-        $output .= '</div>';
+        $output .= '</nav>';
         return $output;
     }
 
