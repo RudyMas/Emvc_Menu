@@ -8,13 +8,12 @@ namespace EasyMVC\Menu;
  * @author      Rudy Mas <rudy.mas@rmsoft.be>
  * @copyright   2018, rmsoft.be. (http://www.rmsoft.be/)
  * @license     https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
- * @version     0.0.1.1
+ * @version     0.0.2.2
  * @package     EasyMVC\Menu
  */
 class BootstrapMenu
 {
     private $menuData;
-    private $options;
 
     private $numberSubmenu = 0;
     private $remove = ['None', 'none', 'NONE'];
@@ -42,6 +41,7 @@ class BootstrapMenu
      *      - back: string          Set the background color by bg-...
      *      - color: strong         Set the background color by hexadecimal value
      */
+    private $options;
 
     /**
      * 0.0 BootstrapMenu constructor.
@@ -67,7 +67,10 @@ class BootstrapMenu
         $output = $this->addOpeningNav($id);
         if ($this->options['brand']['name'] !== '') $output .= $this->addBranding();
         if ($this->options['mobile']) $output .= $this->addMobileButton();
-        $output .= $this->createMainMenu();
+        $output .= '<div class="collapse navbar-collapse" id="bootstrapMenu">';
+        $output .= $this->createLeftMenu();
+        $output .= $this->createRightMenu();
+        $output .= '</div>';
         $output .= '</nav>';
         return $output;
     }
@@ -130,48 +133,67 @@ class BootstrapMenu
     }
 
     /**
-     * 2.0 Creating Bootstrap's Menu
+     * 2.0 Creating Bootstrap's Left Menu
      *
      * @return string
      */
-    private function createMainMenu(): string
+    private function createLeftMenu(): string
     {
         $argsCount = 0;
         $arrayKey = $this->getArrayKey($this->menuData);
-        $output = $this->addOpeningDiv();
-        $output .= '<ul class="navbar-nav">';
+        $output = '<ul class="navbar navbar-nav mr-auto">';
         foreach ($arrayKey as $menuItem) {
-            $arguments[$argsCount] = $menuItem;
-            $arraySubKey = $this->getArrayKey($this->menuData[$menuItem]);
-            if (count($arraySubKey) === 0) {
-                $output .= '<li class="nav-item">';
-                $output .= $this->createNavLinkUrl($arguments);
-                $output .= '</li>';
-            } else {
-                $output .= '<li class="nav-item dropdown">';
-                $output .= $this->createSubmenu($arguments, $this->menuData[$menuItem]);
-                $output .= '</li>';
+            list($url, $text, $place, $id, $class) = $this->getLinkInformation([$menuItem]);
+            if ($place == 'left') {
+                $arguments[$argsCount] = $menuItem;
+                $arraySubKey = $this->getArrayKey($this->menuData[$menuItem]);
+                if (count($arraySubKey) === 0) {
+                    $output .= '<li class="nav-item">';
+                    $output .= $this->createNavLinkUrl($arguments);
+                    $output .= '</li>';
+                } else {
+                    $output .= '<li class="nav-item dropdown">';
+                    $output .= $this->createSubmenu($arguments, $this->menuData[$menuItem]);
+                    $output .= '</li>';
+                }
             }
         }
         $output .= '</ul>';
-        $output .= '</div>';
         return $output;
     }
 
     /**
-     * 2.1 adding the opening div of the main menu
+     * 3.0 Creating Bootstrap's Right Menu
      *
      * @return string
      */
-    private function addOpeningDiv(): string
+    private function createRightMenu(): string
     {
-        $output = '<div class="collapse navbar-collapse"';
-        $output .= ' id="bootstrapMenu">';
+        $argsCount = 0;
+        $arrayKey = $this->getArrayKey($this->menuData);
+        $output = '<ul class="navbar navbar-nav ml-auto">';
+        foreach ($arrayKey as $menuItem) {
+            list($url, $text, $place, $id, $class) = $this->getLinkInformation([$menuItem]);
+            if ($place == 'right') {
+                $arguments[$argsCount] = $menuItem;
+                $arraySubKey = $this->getArrayKey($this->menuData[$menuItem]);
+                if (count($arraySubKey) === 0) {
+                    $output .= '<li class="nav-item">';
+                    $output .= $this->createNavLinkUrl($arguments);
+                    $output .= '</li>';
+                } else {
+                    $output .= '<li class="nav-item dropdown">';
+                    $output .= $this->createSubmenu($arguments, $this->menuData[$menuItem]);
+                    $output .= '</li>';
+                }
+            }
+        }
+        $output .= '</ul>';
         return $output;
     }
 
     /**
-     * 3.0 Create the drop down submenu
+     * 4.0 Create the drop down submenu
      *
      * @param array $arguments
      * @param array $subMenu
@@ -181,7 +203,7 @@ class BootstrapMenu
     {
         $argsCount = count($arguments);
         $arrayKey = $this->getArrayKey($subMenu);
-        list($url, $text, $id, $class) = $this->getLinkInformation($arguments);
+        list($url, $text, $place, $id, $class) = $this->getLinkInformation($arguments);
         $output = '<a class="nav-link dropdown-toggle';
         $output = !empty($class) ? $output . ' ' . $class . '"' : $output . '"';
         if (!empty($id)) $output .= ' id="' . $id . '"';
@@ -209,7 +231,7 @@ class BootstrapMenu
     }
 
     /**
-     * 4.0 Create the drop down submenu from a submenu
+     * 5.0 Create the drop down submenu from a submenu
      *
      * @param array $arguments
      * @param array $subMenu
@@ -219,7 +241,7 @@ class BootstrapMenu
     {
         $argsCount = count($arguments);
         $arrayKey = $this->getArrayKey($subMenu);
-        list($url, $text, $id, $class) = $this->getLinkInformation($arguments);
+        list($url, $text, $place, $id, $class) = $this->getLinkInformation($arguments);
         $output = '<ul class="dropdown-menu">';
         if ($this->options['overview']) $output .= $this->overviewUrl($url, $id, $class);
         foreach ($arrayKey as $menuItem) {
@@ -248,7 +270,7 @@ class BootstrapMenu
      */
     private function createNavLinkUrl(array $args): string
     {
-        list($url, $text, $id, $class) = $this->getLinkInformation($args);
+        list($url, $text, $place, $id, $class) = $this->getLinkInformation($args);
         $output = '<a class="nav-link';
         $output = !empty($class) ? $output . ' ' . $class . '"' : $output . '"';
         if (!empty($id)) $output .= ' id="' . $id . '"';
@@ -264,7 +286,7 @@ class BootstrapMenu
      */
     private function createDropDownItemUrl(array $args): string
     {
-        list($url, $text, $id, $class) = $this->getLinkInformation($args);
+        list($url, $text, $place, $id, $class) = $this->getLinkInformation($args);
         $output = '<a class="dropdown-item';
         $output = !empty($class) ? $output . ' ' . $class . '"' : $output . '"';
         if (!empty($id)) $output .= ' id="' . $id . '"';
@@ -280,7 +302,7 @@ class BootstrapMenu
      */
     private function createDropDownItemSubUrl(array $args): string
     {
-        list($url, $text, $id, $class) = $this->getLinkInformation($args);
+        list($url, $text, $place, $id, $class) = $this->getLinkInformation($args);
         $output = '<a class="dropdown-item dropdown-toggle';
         $output = !empty($class) ? $output . ' ' . $class . '"' : $output . '"';
         if (!empty($id)) $output .= ' id="' . $id . '"';
@@ -299,9 +321,10 @@ class BootstrapMenu
         $arg = Menu::getIndexes($args);
         $url = $this->menuData[$arg[0]][$arg[1]][$arg[2]][$arg[3]][$arg[4]][$arg[5]][$arg[6]][$arg[7]][$arg[8]][$arg[9]]['url'];
         $text = $this->menuData[$arg[0]][$arg[1]][$arg[2]][$arg[3]][$arg[4]][$arg[5]][$arg[6]][$arg[7]][$arg[8]][$arg[9]]['text'];
+        $place = $this->menuData[$arg[0]][$arg[1]][$arg[2]][$arg[3]][$arg[4]][$arg[5]][$arg[6]][$arg[7]][$arg[8]][$arg[9]]['place'];
         $id = $this->menuData[$arg[0]][$arg[1]][$arg[2]][$arg[3]][$arg[4]][$arg[5]][$arg[6]][$arg[7]][$arg[8]][$arg[9]]['id'];
         $class = $this->menuData[$arg[0]][$arg[1]][$arg[2]][$arg[3]][$arg[4]][$arg[5]][$arg[6]][$arg[7]][$arg[8]][$arg[9]]['class'];
-        return [$url, $text, $id, $class];
+        return [$url, $text, $place, $id, $class];
     }
 
     /**
