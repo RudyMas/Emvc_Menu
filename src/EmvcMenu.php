@@ -8,7 +8,7 @@ namespace EasyMVC;
  * @author      Rudy Mas <rudy.mas@rmsoft.be>
  * @copyright   2018-2020, rmsoft.be. (http://www.rmsoft.be/)
  * @license     https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
- * @version     0.0.2.3
+ * @version     0.1.0.4
  * @package     EasyMVC\Menu
  */
 class EmvcMenu
