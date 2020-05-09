@@ -3,12 +3,12 @@
 namespace EasyMVC;
 
 /**
- * Class Menu (PHP version 7.1)
+ * Class Menu (PHP version 7.2)
  *
  * @author      Rudy Mas <rudy.mas@rmsoft.be>
  * @copyright   2017-2020, rmsoft.be. (http://www.rmsoft.be/)
  * @license     https://opensource.org/licenses/GPL-3.0 GNU General Public License, version 3 (GPL-3.0)
- * @version     1.9.2.17
+ * @version     2.0.2.0
  * @package     EasyMVC\Menu
  */
 class Menu
